@@ -72,9 +72,10 @@ docker compose run --rm airflow-init
 # 4. Open Airflow UI
 open http://localhost:8080
 
-#7. Open another terminal and enter dbt-terraform for Terraform 
+#7. Enter dbt-terraform for Terraform 
 docker exec -it citrus_trade_airflow-dbt-terraform bash 
-# Then
+# Default folder is dbt, cd to Terraform
+# Init Terraform before plan and apply
 cd .. 
 cd terraform 
 terraform init
@@ -85,5 +86,6 @@ terraform apply citrus_trade.tfplan
 docker exec -it citrus_trade_airflow-dbt-terraform bash 
 
 #6. The container is by default in the dbt folder, usual dbt commands can be used
+# Install dependencies and run
+dbt deps
 dbt run
-
