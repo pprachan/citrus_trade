@@ -7,7 +7,7 @@ This project implements a **fully containerized data pipeline** orchestrating th
 ## 🧩 Architecture Overview
 
 ![Architecture Diagram](./docs/architecture.png)
-[text](https://miro.com/app/board/uXjVJtzeRYA=/?share_link_id=475327142809)
+[Architecture Diagram on Miro](https://miro.com/app/board/uXjVJtzeRYA=/?share_link_id=475327142809)
 
 ### Key Components
 
