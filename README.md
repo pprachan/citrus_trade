@@ -72,7 +72,7 @@ docker compose up -d
 # 4. Open Airflow UI
 open http://localhost:8080
 
-#7. Enter dbt-terraform for Terraform 
+# 5. Enter dbt-terraform for Terraform 
 docker exec -it citrus_trade_airflow-dbt-terraform bash 
 # Init Terraform before plan and apply
 cd terraform 
@@ -80,8 +80,11 @@ terraform init
 terraform plan -out=citrus_trade.tfplan
 terraform apply citrus_trade.tfplan
 
-# 5. Enter the dbt-terraform container for dbt 
+# 6. Enter the dbt-terraform container for dbt 
 docker exec -it citrus_trade_airflow-dbt-terraform bash 
 cd dbt
 dbt deps
 dbt run
+
+# 7. Open dbt-docs
+open http://localhost:5050
