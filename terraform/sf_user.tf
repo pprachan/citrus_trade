@@ -1,6 +1,5 @@
 resource "snowflake_user" "dbt_user" {
     name = "DBT_USER"
-    password = "dbt_user*A123"
     default_warehouse = "COMPUTE_WH"
     default_role = "SYSADMIN"
     must_change_password = false
@@ -12,7 +11,6 @@ resource "snowflake_user" "dbt_user" {
 
 resource "snowflake_user" "airflow_user" {
     name = "AIRFLOW_USER"
-    password = "airflow_user*A123"
     default_warehouse = "COMPUTE_WH"
     default_role = "SYSADMIN"
     must_change_password = false
@@ -24,7 +22,6 @@ resource "snowflake_user" "airflow_user" {
 
 resource "snowflake_user" "looker_user" {
     name = "LOOKER_USER"
-    password = "looker_user*A123"
     default_warehouse = "COMPUTE_WH"
     default_role = "SYSADMIN"
     must_change_password = false
@@ -69,7 +66,6 @@ resource "snowflake_grant_privileges_to_account_role" "grant_select_tables" {
 
 resource "snowflake_user" "analyst_user" {
     name = "ANALYST_USER"
-    password = "analyst_user*A123"
     default_warehouse = "COMPUTE_WH"
     default_role = "ANALYST_ROLE"
     must_change_password = false
