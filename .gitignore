@@ -85,3 +85,4 @@ temp/
 
 # --- Creds ---
 export_tf_var.sh
+snowflake_creds.txt

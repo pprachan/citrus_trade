@@ -1,8 +1,0 @@
-DBEAVER:
-Host: GYLOBBH-FI81452.snowflakecomputing.com
-Database: TRADE_FLOW
-Warehouse: COMPUTE_WH
-Schema: RAW
-Username: ANALYST_USER
-Password: analyst_user*A123*
-Role: ANALYST_ROLE
