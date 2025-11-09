@@ -82,3 +82,6 @@ temp/
 # --- IDEs & Editors ---
 .vscode/
 .idea/
+
+# --- Creds ---
+export_tf_var.sh
