@@ -14,7 +14,7 @@ This project implements a **fully containerized data pipeline** orchestrating th
 |--------|-------------|----------|
 | **Storage** | **AWS S3** | Stores raw CSV and transformed Parquet files |
 | **Exploration** | **Databricks** | Used for data exploration and parquet conversion |
-| **Orchestration** | **Airflow** | Automates file ingestion and table creation |
+| **Orchestration** | **Airflow** | File ingestion and table creation in RAW schema |
 | **Infrastructure** | **Terraform** | Provisions Snowflake databases, schemas, roles, and file formats |
 | **Transformation** | **dbt Core** | Models and transforms data inside Snowflake |
 | **Documentation** | **dbt Docs** | Generates model documentation and lineage graphs |
@@ -25,11 +25,11 @@ This project implements a **fully containerized data pipeline** orchestrating th
 
 ## ⚙️ Data Flow
 
-1. **Raw Data Upload**  
-   - CSV files are stored in an **S3 bucket** under `/raw/`.
-   - Databricks optionally explores and exports curated **Parquet files**.
+0. **AWS S3**  
+   - Metadata are stored at `s3://pprachan-eraneos-data/raw/metadata/`.
+   - Flow trade are stored at `s3://pprachan-eraneos-data/trhs_citrus_parquet/`.
 
-2. **Infrastructure Provisioning (Terraform)**  
+1. **Infrastructure Provisioning (Terraform)**  
    - Creates Snowflake objects:
      - Database: `TRADE_FLOW`
      - Schemas: `RAW`, `STAGING`, `MARTS`, `ANALYTICS`
@@ -37,20 +37,23 @@ This project implements a **fully containerized data pipeline** orchestrating th
      - File formats (`CSV_COMMA_FORMAT`, `PARQUET_FORMAT`)
      - External stages pointing to S3
 
-3. **Ingestion (Airflow)**  
+2. **Ingestion (Airflow)**  
    - Airflow DAGs execute SQL scripts that:
+     - Create storage integration 
      - Create external stages
-     - Load data into Snowflake tables using `COPY INTO`
-     - Trigger downstream dbt transformations
+     - Load data into Snowflake tables in the `RAW` schema using `COPY INTO`
 
-4. **Transformation (dbt)**  
+3. **Transformation (dbt)**  
    - dbt models transform raw Snowflake tables into clean, analytics-ready tables.
    - Follows the **staging → marts → analytics** convention.
    - dbt Docs provides full lineage and model documentation.
 
-5. **Visualization (Looker Studio)**  
+4. **Visualization (Looker Studio)**  
    - Connects directly to Snowflake for BI dashboards, exposing key trade metrics.
 
+Notes:
+* The original data is uploaded manually to AWS S3
+* DBT is decoupled from Airflow (we could use Cosmos or DBT Cloud in a production setting)
 ---
 
 ### Quick Start
