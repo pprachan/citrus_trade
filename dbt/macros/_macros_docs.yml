@@ -1,0 +1,31 @@
+macros:
+  - name: generate_schema_name
+    description: 
+      Determines which schema name dbt should use when building models.
+      This macro allows you to customize schema naming per model or environment.
+      If a custom schema is provided, it returns that schema name (trimmed of whitespace);
+      otherwise, it falls back to the default schema defined in the active dbt target
+      (`target.schema`).
+
+  - name: grant_select
+    description:
+      Grants a specified Snowflake role `USAGE` and `SELECT` privileges on all
+      existing and future tables and views within a given schema.
+
+      This macro is useful for ensuring that analytic or reporting roles
+      automatically have access to new objects created by dbt runs without
+      requiring manual grants.
+
+    arguments:
+      - name: schema
+        type: string
+        description: >
+          The target schema to grant privileges on.
+          Defaults to `target.schema` (the schema defined in the active dbt target).
+
+      - name: role
+        type: string
+        description: >
+          The Snowflake role to receive the privileges.
+          Defaults to `target.role` (the role used for the current dbt target).
+
