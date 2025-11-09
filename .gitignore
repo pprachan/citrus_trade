@@ -8,6 +8,7 @@
 dbt/target/
 dbt/logs/
 dbt/packages/
+dbt/dbt_packages/
 dbt/dbt_modules/
 dbt/.user.yml
 dbt/profiles.yml
