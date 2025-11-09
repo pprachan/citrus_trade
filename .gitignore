@@ -1,0 +1,83 @@
+# ==============================================
+# 🌍 Global Git Ignore for Modern Data Stack
+# Components: Airflow + dbt + Terraform + Docker
+# ==============================================
+
+# --- dbt ---
+# Local profiles and target files
+dbt/target/
+dbt/logs/
+dbt/packages/
+dbt/dbt_modules/
+dbt/.user.yml
+dbt/profiles.yml
+
+# Compiled model output
+dbt/.manifest.json
+dbt/.run_results.json
+dbt/.partial_parse.msgpack
+
+# --- Airflow ---
+# Airflow metadata and logs
+logs/
+dags/__pycache__/
+include/__pycache__/
+plugins/__pycache__/
+config/
+
+# --- Terraform ---
+# State and lock files
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.*
+terraform/crash.log
+terraform/.terraform.tfstate.lock.info
+terraform/terraform.tfvars
+terraform/*.tfplan
+terraform/.terraformrc
+terraform/override.tf
+terraform/override.tf.json
+terraform/*_override.tf
+
+# --- Docker ---
+# Build artifacts
+*.pid
+*.seed
+*.bak
+*.swp
+*.tmp
+*.log
+
+# Ignore container state and volumes
+**/.DS_Store
+**/.AppleDouble
+**/.Spotlight-V100
+**/.Trashes
+
+# Docker local files
+docker-compose.override.yml
+.dockerignore
+Dockerfile.local
+.env
+.env.*
+
+# --- System Files ---
+.DS_Store
+Thumbs.db
+Icon?
+ehthumbs.db
+desktop.ini
+
+# --- Logs & Temporary Output ---
+*.log
+*.out
+*.tmp
+*.cache
+logs/
+tmp/
+temp/
+
+# --- IDEs & Editors ---
+.vscode/
+.idea/
