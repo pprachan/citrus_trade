@@ -1,6 +1,7 @@
 x-airflow-common:
   &airflow-common
   image: airflow-dbt:latest
+  user: "${AIRFLOW_UID:-50000}:0"
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -15,6 +16,8 @@ x-airflow-common:
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    # Global Snowflake connection for all Airflow components
+
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/sql:/opt/airflow/sql
@@ -24,7 +27,6 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/dbt:/opt/airflow/dbt
     - ${AIRFLOW_PROJ_DIR:-.}/terraform:/opt/airflow/terraform
-  user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
     redis:
@@ -62,6 +64,22 @@ services:
       start_period: 30s
     restart: always
 
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        mkdir -p /opt/airflow/{logs,dags,plugins,config,dbt,terraform}
+        chown -R "${AIRFLOW_UID}:0" /opt/airflow/{logs,dags,plugins,config,dbt,terraform}
+        exec /entrypoint airflow db migrate && exec /entrypoint airflow users create \
+          --username ${_AIRFLOW_WWW_USER_USERNAME:-airflow} \
+          --password ${_AIRFLOW_WWW_USER_PASSWORD:-airflow} \
+          --firstname admin --lastname user --role Admin --email admin@example.com
+    environment:
+      <<: *airflow-common-env
+    user: "0:0"
+
   airflow-apiserver:
     <<: *airflow-common
     command: api-server
@@ -84,21 +102,6 @@ services:
     command: scheduler
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    restart: always
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
-
-  airflow-dag-processor:
-    <<: *airflow-common
-    command: dag-processor
-    healthcheck:
-      test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -146,23 +149,20 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-  airflow-init:
+  airflow-dag-processor:
     <<: *airflow-common
-    entrypoint: /bin/bash
-    command:
-      - -c
-      - |
-        mkdir -p /opt/airflow/{logs,dags,plugins,config,dbt,terraform}
-        chown -R "${AIRFLOW_UID}:0" /opt/airflow/{logs,dags,plugins,config,dbt,terraform}
-        exec /entrypoint airflow version
-    environment:
-      <<: *airflow-common-env
-      _AIRFLOW_DB_MIGRATE: 'true'
-      _AIRFLOW_WWW_USER_CREATE: 'true'
-      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
-      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
-      _PIP_ADDITIONAL_REQUIREMENTS: ''
-    user: "0:0"
+    command: dag-processor
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
 
   airflow-cli:
     <<: *airflow-common
@@ -202,12 +202,17 @@ services:
       context: .
       dockerfile: dbt-terraform.Dockerfile
     container_name: dbt-terraform
-    working_dir: /opt/airflow/dbt
+    working_dir: /opt/airflow
     command: tail -f /dev/null
     volumes:
       - .:/opt/airflow
     environment:
-      - DBT_PROFILES_DIR=/opt/airflow/dbt
+      DBT_PROFILES_DIR: /opt/airflow/dbt
+      TF_VAR_SNOWFLAKE_USER: TERRAFORM_USER
+      TF_VAR_SNOWFLAKE_PASS: terraform_user*A123*
+      TF_VAR_SNOWFLAKE_ACCOUNT: GYLOBBH-FI81452
+      TF_VAR_SNOWFLAKE_WAREHOUSE: COMPUTE_WH
+      TF_VAR_SNOWFLAKE_ROLE: ACCOUNTADMIN
     tty: true
 
   dbt-docs:
@@ -223,7 +228,7 @@ services:
     volumes:
       - .:/opt/airflow
     environment:
-      - DBT_PROFILES_DIR=/opt/airflow/dbt
+      DBT_PROFILES_DIR: /opt/airflow/dbt
     depends_on:
       - dbt-terraform
 
