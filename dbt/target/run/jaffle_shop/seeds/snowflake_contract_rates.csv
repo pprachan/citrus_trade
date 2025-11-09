@@ -1,0 +1,12 @@
+
+    
+    
+    truncate table "JAFFLE_SHOP"."ANALYTICS"."SNOWFLAKE_CONTRACT_RATES";
+    -- dbt seed --
+    
+            insert into JAFFLE_SHOP.ANALYTICS.snowflake_contract_rates (effective_date, rate) values
+            (%s,%s),(%s,%s)
+        
+
+;
+  

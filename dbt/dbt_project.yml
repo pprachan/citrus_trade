@@ -1,0 +1,26 @@
+name: 'citrus_trade'
+version: '1.0'
+config-version: 2
+
+profile: 'citrus_trade'
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  hs6_code: "080510"
+
+models:
+  citrus_trade:
+    staging:
+      +schema: staging
+      +materialized: table
+    marts:
+      +materialized: table 
+      +schema: marts
+    analytics:
+      +materialized: table 
+      +schema: analytics
