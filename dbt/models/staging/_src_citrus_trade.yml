@@ -1,7 +1,7 @@
 sources:
   - name: citrus_trade
     database: trade_flow
-    schema: raw        
+    schema: raw
     tables:
       - name: raw_trhs
       - name: raw_cn
