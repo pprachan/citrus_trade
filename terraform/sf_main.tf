@@ -18,7 +18,7 @@ resource "snowflake_schema" "raw_schema" {
 resource "snowflake_schema" "staging_schema" {
   database    = snowflake_database.trade_flow.name
   name        = "STAGING"
-  comment     = "Schema to hold data loaded from S3."
+  comment     = "Light transformation and formatting, no joins."
   is_managed  = false
 }
 
