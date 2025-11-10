@@ -34,7 +34,7 @@ resource "snowflake_schema" "marts_schema" {
 resource "snowflake_schema" "analytics_schema" {
   database    = snowflake_database.trade_flow.name
   name        = "ANALYTICS"
-  comment     = "Table to be consume for visualisation"
+  comment     = "Models for visualisation"
   is_managed  = false
 }
 
